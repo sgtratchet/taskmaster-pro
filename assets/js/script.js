@@ -1,5 +1,24 @@
 var tasks = {};
 
+var auditTask =function (taskEl) {
+  // get date from task element
+  var date = $(taskEl).find("span").text().trim();
+
+  // convert to moment object at 5:00pm
+  var time = moment(date, "L").set("hour", 17);
+
+  // remove any old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+
+  // apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger");
+  }
+  else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+};
+
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
@@ -36,6 +55,7 @@ var loadTasks = function() {
   // loop over object properties
   $.each(tasks, function(list, arr) {
     console.log(list, arr);
+    
     // then loop over sub-array
     arr.forEach(function(task) {
       createTask(task.text, task.date, list);
@@ -196,7 +216,7 @@ $("#task-form-modal .btn-save").click(function() {
     $("#task-form-modal").modal("hide");
 
     // save in tasks array
-    tasks.toDo.push({
+    tasks.toDo?.push({
       text: taskText,
       date: taskDate
     });
@@ -280,24 +300,7 @@ $("#remove-tasks").on("click", function() {
 // load tasks for the first time
 loadTasks();
 
-var auditTask = function(taskEl) {
-  // get date from task element
-  var date = $(taskEl).find("span").text().trim();
 
-  // convert to moment object at 5:00pm
-  var time = moment(date, "L").set("hour", 17);
-
-  // remove any old classes from element
-  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
-
-  // apply new class if task is near/over due date
-  if (moment().isAfter(time)) {
-    $(taskEl).addClass("list-group-item-danger");
-  }
-  else if (Math.abs(moment().diff(time, "days")) <= 2) {
-    $(taskEl).addClass("list-group-item-warning");
-  }
-};
 
 setInterval(function () {
   $(".card .list-group-item").each(function (el) {
